@@ -1,0 +1,38 @@
+﻿using TaskManagementSystem.Core.Entities;
+
+namespace TaskManagementSystem.Infrastructure.Helpers;
+
+public static class ValidationHelper
+{
+    public static void ValidateTaskItemAdd(TaskItemAdd task)
+    {
+        if (string.IsNullOrWhiteSpace(task.Name))
+        {
+            throw new ArgumentException("Task name is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(task.Description))
+        {
+            throw new ArgumentException("Task description is required.");
+        }
+
+        if (!Enum.IsDefined(typeof(TaskItemStatus), task.Status))
+        {
+            throw new ArgumentException("Invalid task status.");
+        }
+    }
+
+    public static void ValidateUpdateTaskStatusAsync(int id, TaskItemStatus status)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("Invalid task ID.");
+        }
+
+        if (!Enum.IsDefined(typeof(TaskItemStatus), status))
+        {
+            throw new ArgumentException("Invalid task status.");
+        }
+    }
+}
+
