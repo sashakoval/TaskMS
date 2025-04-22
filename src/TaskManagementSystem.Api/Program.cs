@@ -4,7 +4,7 @@ using TaskManagementSystem.Api.Endpoints;
 using TaskManagementSystem.Api.Handlers;
 using TaskManagementSystem.Application.Interfaces;
 using TaskManagementSystem.Application.Services;
-using TaskManagementSystem.Infrastructure;
+using TaskManagementSystem.Infrastreucture.Helpers;
 using TaskManagementSystem.Infrastructure.Data;
 using TaskManagementSystem.Infrastructure.Repositories;
 
@@ -27,12 +27,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

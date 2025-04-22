@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using TaskManagementSystem.Application.Interfaces;
 
-namespace TaskManagementSystem.Infrastructure;
+namespace TaskManagementSystem.Infrastreucture.Helpers;
 
 public class ServiceBusHelper : IServiceBusHelper
 {
@@ -11,19 +11,18 @@ public class ServiceBusHelper : IServiceBusHelper
 
     public ServiceBusHelper(IConfiguration configuration)
     {
-        var connectionString = configuration["ServiceBus:ConnectionString"] ?? throw new ArgumentNullException("ServiceBus:ConnectionString");
-        _queueName = configuration["ServiceBus:QueueName"] ?? throw new ArgumentNullException("ServiceBus:QueueName");
+        var connectionString = Environment.GetEnvironmentVariable("ServiceBus__ConnectionString") ?? throw new ArgumentException("Service Bus connection string is not configured.");
+        _queueName = Environment.GetEnvironmentVariable("ServiceBus__QueueName") ?? throw new ArgumentException("Service Bus queue name is not configured.");
+
         _client = new ServiceBusClient(connectionString);
     }
 
-    // Send a message to the Service Bus queue  
     public async Task SendMessageAsync(string message)
     {
         var sender = _client.CreateSender(_queueName);
         await sender.SendMessageAsync(new ServiceBusMessage(message));
     }
 
-    // Start receiving messages from the Service Bus queue  
     public async Task StartReceivingMessagesAsync(Func<string, Task> messageHandler)
     {
         var processor = _client.CreateProcessor(_queueName, new ServiceBusProcessorOptions());

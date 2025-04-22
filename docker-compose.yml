@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__SQLServer=${SQLSERVER_CONNECTION_STRING}
+      - ServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING}
+      - ServiceBus__QueueName=${SERVICE_BUS_QUEUE_NAME}
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "YourStrong!Password"
+      ACCEPT_EULA: "Y"
