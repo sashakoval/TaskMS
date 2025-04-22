@@ -53,6 +53,11 @@ public class TaskService : ITaskService
             throw new KeyNotFoundException($"Task with ID {id} not found.");
         }
 
+        if (task.Status == status)
+        {
+            throw new InvalidOperationException($"Task with ID {id} already has status {status}.");
+        }
+
         task.Status = status;
         await _taskRepository.UpdateAsync(task);
 
