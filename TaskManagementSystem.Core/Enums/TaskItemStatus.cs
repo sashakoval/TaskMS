@@ -1,4 +1,4 @@
-namespace TaskManagementSystem.Core.Entities;
+namespace TaskManagementSystem.Core.Enums;
 
 public enum TaskItemStatus
 {

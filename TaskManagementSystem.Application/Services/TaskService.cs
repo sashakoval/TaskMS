@@ -1,29 +1,31 @@
-using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Application.Interfaces;
+using TaskManagementSystem.Application.Models;
 using TaskManagementSystem.Core.Entities;
-using TaskManagementSystem.Infrastructure.Helpers;
+using TaskManagementSystem.Core.Enums;
 
-namespace TaskManagementSystem.Infrastructure.Data;
+namespace TaskManagementSystem.Application.Services;
 
 public class TaskService : ITaskService
 {
-	private readonly TaskDbContext _context;
+    private readonly ITaskRepository _taskRepository;
     private readonly IServiceBusHelper _serviceBusHelper;
+    private readonly IValidationService _validationService;
 
-    public TaskService(TaskDbContext context, IServiceBusHelper serviceBusHelper)
+    public TaskService(ITaskRepository taskRepository, IServiceBusHelper serviceBusHelper, IValidationService validationService)
     {
-        _context = context;
+        _taskRepository = taskRepository;
         _serviceBusHelper = serviceBusHelper;
+        _validationService = validationService;
     }
 
     public async Task<IEnumerable<TaskItem>> GetTasksAsync()
-	{
-		return await _context.Tasks.ToListAsync();
-	}
-
-    public async Task<TaskItem> AddTaskAsync(TaskItemAdd task)
     {
-        ValidationHelper.ValidateTaskItemAdd(task);
+        return await _taskRepository.GetAllAsync();
+    }
+
+    public async Task<TaskItem> AddTaskAsync(TaskItemAddModel task)
+    {
+        _validationService.ValidateTaskItemAdd(task);
 
         var taskEntity = new TaskItem
         {
@@ -32,8 +34,7 @@ public class TaskService : ITaskService
             Status = task.Status
         };
 
-        _context.Tasks.Add(taskEntity);
-        await _context.SaveChangesAsync();
+        await _taskRepository.AddAsync(taskEntity);
 
         // Send a message to the Service Bus if the task is completed
         await SendTaskMessageIfCompleted(taskEntity);
@@ -43,9 +44,9 @@ public class TaskService : ITaskService
 
     public async Task<TaskItem> UpdateTaskStatusAsync(int id, TaskItemStatus status)
     {
-        ValidationHelper.ValidateUpdateTaskStatusAsync(id, status);
+        _validationService.ValidateUpdateTaskStatus(id, status);
 
-        var task = await _context.Tasks.FindAsync(id);
+        var task = await _taskRepository.GetByIdAsync(id);
 
         if (task == null)
         {
@@ -53,7 +54,7 @@ public class TaskService : ITaskService
         }
 
         task.Status = status;
-        await _context.SaveChangesAsync();
+        await _taskRepository.UpdateAsync(task);
 
         // Send a message to the Service Bus if the task is completed
         await SendTaskMessageIfCompleted(task);
@@ -78,3 +79,4 @@ public class TaskService : ITaskService
         }
     }
 }
+

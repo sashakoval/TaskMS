@@ -1,10 +1,12 @@
-﻿using TaskManagementSystem.Core.Entities;
+﻿using TaskManagementSystem.Application.Interfaces;
+using TaskManagementSystem.Application.Models;
+using TaskManagementSystem.Core.Enums;
 
-namespace TaskManagementSystem.Infrastructure.Helpers;
+namespace TaskManagementSystem.Application.Services;
 
-public static class ValidationHelper
+public class ValidationService : IValidationService
 {
-    public static void ValidateTaskItemAdd(TaskItemAdd task)
+    public void ValidateTaskItemAdd(TaskItemAddModel task)
     {
         if (string.IsNullOrWhiteSpace(task.Name))
         {
@@ -22,7 +24,7 @@ public static class ValidationHelper
         }
     }
 
-    public static void ValidateUpdateTaskStatusAsync(int id, TaskItemStatus status)
+    public void ValidateUpdateTaskStatus(int id, TaskItemStatus status)
     {
         if (id <= 0)
         {

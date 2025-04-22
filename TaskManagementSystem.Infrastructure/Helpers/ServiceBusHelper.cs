@@ -1,7 +1,8 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Configuration;
 using TaskManagementSystem.Application.Interfaces;
 
-namespace TaskManagementSystem.Services;
+namespace TaskManagementSystem.Infrastructure;
 
 public class ServiceBusHelper : IServiceBusHelper
 {

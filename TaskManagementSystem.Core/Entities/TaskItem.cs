@@ -1,4 +1,6 @@
-﻿namespace TaskManagementSystem.Core.Entities;
+﻿using TaskManagementSystem.Core.Enums;
+
+namespace TaskManagementSystem.Core.Entities;
 
 public class TaskItem
 {

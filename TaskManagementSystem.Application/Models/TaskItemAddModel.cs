@@ -1,6 +1,8 @@
-﻿namespace TaskManagementSystem.Core.Entities;
+﻿using TaskManagementSystem.Core.Enums;
 
-public class TaskItemAdd
+namespace TaskManagementSystem.Application.Models;
+
+public class TaskItemAddModel
 {
     public required string Name { get; set; }
     public required string Description { get; set; }
