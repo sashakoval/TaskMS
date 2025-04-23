@@ -1,24 +1,38 @@
-version: '3.8'
+   version: '3.8'
 
-services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - ConnectionStrings__SQLServer=${SQLSERVER_CONNECTION_STRING}
-      - ServiceBus__ConnectionString=${SERVICE_BUS_CONNECTION_STRING}
-      - ServiceBus__QueueName=${SERVICE_BUS_QUEUE_NAME}
-    depends_on:
-      - sqlserver
+   services:
+     api:
+       build:
+         context: .
+         dockerfile: Dockerfile
+       ports:
+         - "8080:8080"
+       environment:
+         - ASPNETCORE_ENVIRONMENT=Development
+         - ConnectionStrings__SQLServer=Server=host.docker.internal,1433;Database=TaskDb;User Id=sa;Password=12345!Strong;TrustServerCertificate=True;
+         - ServiceBus__ConnectionString=Endpoint=sb://taskmanagementservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=LsYYqGxayoZAWQ49SbLGibmP2nL4sbAbx+ASbF7tHx0=
+         - ServiceBus__QueueName=task-queue
+       networks:
+         - taskms-network
+       depends_on:
+         - sqlserver
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "YourStrong!Password"
-      ACCEPT_EULA: "Y"
+     sqlserver:
+       image: mcr.microsoft.com/mssql/server:2022-latest
+       container_name: sqlserver
+       ports:
+         - "1433:1433"
+       environment:
+         SA_PASSWORD: "12345!Strong"
+         ACCEPT_EULA: "Y"
+       volumes:
+         - sqlserverdata:/var/opt/mssql
+       networks:
+         - taskms-network
+
+   networks:
+     taskms-network:
+       driver: bridge
+   
+   volumes:
+     sqlserverdata:

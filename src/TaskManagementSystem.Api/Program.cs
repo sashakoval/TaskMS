@@ -35,5 +35,6 @@ app.UseHttpsRedirection();
 // Register Minimal API Endpoints
 app.MapTaskEndpoints();
 
-app.Run();
+await TaskDbInitializer.InitializeDatabaseAsync(app);
 
+app.Run();
