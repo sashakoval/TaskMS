@@ -9,7 +9,7 @@
          - "8080:8080"
        environment:
          - ASPNETCORE_ENVIRONMENT=Development
-         - ConnectionStrings__SQLServer=Server=sqlserver,1433;Database=TaskDb;User Id=sa;Password=12345;
+         - ConnectionStrings__SQLServer=Server=sqlserver,1433;Database=TaskDb;User Id=sa;Password=12345!Strong;TrustServerCertificate=True;
          - ServiceBus__ConnectionString=Endpoint=sb://taskmanagementservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=LsYYqGxayoZAWQ49SbLGibmP2nL4sbAbx+ASbF7tHx0=
          - ServiceBus__QueueName=task-queue
        networks:
@@ -23,7 +23,7 @@
        ports:
          - "1433:1433"
        environment:
-         SA_PASSWORD: "12345"
+         SA_PASSWORD: "12345!Strong"
          ACCEPT_EULA: "Y"
        volumes:
          - sqlserverdata:/var/opt/mssql

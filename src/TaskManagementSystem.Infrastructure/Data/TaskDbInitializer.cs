@@ -10,29 +10,24 @@ public static class TaskDbInitializer
     {
         using var scope = host.Services.CreateScope();
         var services = scope.ServiceProvider;
-        var context = services.GetRequiredService<TaskDbContext>();
-        var logger = services.GetRequiredService<ILogger<TaskDbContext>>();
-        var retryCount = 10;
-        var delaySeconds = 5;
 
-        for (int i = 0; i < retryCount; i++)
+        try
         {
-            try
+            var context = services.GetRequiredService<TaskDbContext>();
+            var logger = services.GetRequiredService<ILogger<TaskDbContext>>();
+
+            if (context.Database.IsSqlServer())
             {
-                if (context.Database.IsSqlServer())
-                {
-                    logger.LogInformation("Checking for pending migrations...");
-                    await context.Database.MigrateAsync();
-                    logger.LogInformation("Database migrations applied successfully.");
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Database is not ready yet. Waiting {Delay}s before retry ({Attempt}/{MaxAttempts})", delaySeconds, i + 1, retryCount);
-                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+                logger.LogInformation("Checking for pending migrations...");
+                await context.Database.MigrateAsync();
+                logger.LogInformation("Database migrations applied successfully.");
             }
         }
-
-        throw new Exception("Unable to connect to the database.");
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<TaskDbContext>>();
+            logger.LogError(ex, "An error occurred while initializing the database.");
+            throw;
+        }
     }
 }
